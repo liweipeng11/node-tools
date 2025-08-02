@@ -1,0 +1,11 @@
+# 忽略图片文件夹
+images/
+
+# 忽略Node.js依赖文件夹
+node_modules/
+
+# 忽略saved文件夹
+saved/
+
+# 忽略split文件夹
+split/
