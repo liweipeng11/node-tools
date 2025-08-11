@@ -1,42 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 const { v4 } = require('uuid');
-
-// 创建images文件夹（如果不存在）
-const imagesDir = './images';
-if (!fs.existsSync(imagesDir)) {
-    fs.mkdirSync(imagesDir);
-} else {
-    // 清空文件夹
-    fs.readdirSync(imagesDir).forEach(file => {
-        const filePath = path.join(imagesDir, file);
-        if (fs.lstatSync(filePath).isFile()) {
-            fs.unlinkSync(filePath);
-        }
-    });
-}
-
-// 下载图片函数
-function downloadImage(url, filePath) {
-    return axios({
-        url,
-        method: 'GET',
-        responseType: 'stream'
-    })
-        .then(response => {
-            return new Promise((resolve, reject) => {
-                const writer = fs.createWriteStream(filePath);
-                response.data.pipe(writer);
-                writer.on('finish', resolve);
-                writer.on('error', reject);
-            });
-        })
-        .catch(error => {
-            console.error(`下载图片 ${url} 失败:`, error.message);
-            return Promise.reject(error);
-        });
-}
 
 // 读取/data/mcp-servers.json文件
 fs.readFile('./data/mcp-servers.json', 'utf8', (err, data) => {
@@ -90,23 +54,6 @@ fs.readFile('./data/mcp-servers.json', 'utf8', (err, data) => {
         }
         mcpServers.forEach((server) => {
             const hubId = v4();
-
-            // 下载图片
-            if (server.logo_url) {
-                const fileExtension = path.extname(server.logo_url);
-                const imageFileName = `${hubId}${fileExtension}`;
-                const imageFilePath = path.join(imagesDir, imageFileName);
-
-                downloadImage(server.logo_url, imageFilePath)
-                    .then(() => {
-                        console.log(`成功下载图片: ${imageFileName}`);
-                    })
-                    .catch(() => {
-                        // 图片下载失败不影响其他操作
-                        console.log(`图片下载失败，继续处理其他数据`);
-                    });
-            }
-
             createToSplit(server, hubId, splitDir);
             createToLang(server, hubId, langDir);
             createToSaved(server, hubId, savedDir);

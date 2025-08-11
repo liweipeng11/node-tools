@@ -1,0 +1,5 @@
+# 忽略Node.js依赖文件夹
+node_modules/
+
+# 忽略data文件夹
+data/
