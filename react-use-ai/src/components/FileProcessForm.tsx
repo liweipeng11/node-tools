@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Input, Button, message, Modal } from 'antd';
+import { Input, Button, message, Modal, Select } from 'antd';
 import axios from 'axios';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
@@ -7,7 +7,7 @@ import { json } from '@codemirror/lang-json';
 import { css } from '@codemirror/lang-css';
 
 interface InputItem {
-    id?: string;
+    id: string;
     type: 'file' | 'prompt';
     value: string;
 }
@@ -16,6 +16,7 @@ interface ProcessData {
     inputs: InputItem[];
     outputFolder: string;
     outputFileName: string;
+    outputFileType: string;
 }
 
 interface ProcessResult {
@@ -28,7 +29,11 @@ const FileProcessForm: React.FC = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [inputs, setInputs] = useState<InputItem[]>([]);
     const [outputFolder, setOutputFolder] = useState('');
-    const [outputFileName, setOutputFileName] = useState('');
+    const [outputFileType, setOutputFileType] = useState('');
+    const [sourceFolder, setSourceFolder] = useState('');
+    const [fileType, setFileType] = useState('');
+    const [fileList, setFileList] = useState<string[]>([]);
+    const [extractLoading, setExtractLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<ProcessResult | null>(null);
     const [isResultModalVisible, setIsResultModalVisible] = useState(false);
@@ -85,6 +90,38 @@ const FileProcessForm: React.FC = () => {
         setInputs(newInputs);
     };
 
+    const handleExtractFiles = async () => {
+        if (!sourceFolder) {
+            messageApi.error('请输入源代码根目录');
+            return;
+        }
+        if (!fileType) {
+            messageApi.error('请输入提取文件类型');
+            return;
+        }
+    
+        setExtractLoading(true);
+        try {
+            const response = await axios.post<{ success: boolean; data: string[]; message?: string }>('/api/list-files', {
+                folderPath: sourceFolder,
+                fileType: fileType,
+            });
+            if (response.data.success) {
+                setFileList(response.data.data);
+                messageApi.success('文件提取成功');
+            } else {
+                messageApi.error(response.data.message || '文件提取失败');
+                setFileList([]);
+            }
+        } catch (error) {
+            console.error('提取文件失败:', error);
+            messageApi.error('提取文件失败，请检查服务是否可用');
+            setFileList([]);
+        } finally {
+            setExtractLoading(false);
+        }
+    };
+
     const handleConvert = async () => {
         // 验证是否有文件地址和提示词
         const hasFile = inputs.some(input => input.type === 'file');
@@ -113,23 +150,50 @@ const FileProcessForm: React.FC = () => {
             return;
         }
 
-        if (!outputFileName) {
-            messageApi.error('请输入输出文件名');
+        if (!outputFileType) {
+            messageApi.error('请输入输出文件类型');
             return;
         }
+
+        const fileInput = inputs.find(input => input.type === 'file');
+        if (!fileInput || !fileInput.value) {
+            messageApi.error('未找到有效的文件输入');
+            return;
+        }
+
+        const filePath = fileInput.value;
+        const lastSeparatorIndex = Math.max(filePath.lastIndexOf('\\'), filePath.lastIndexOf('/'));
+        
+        const directoryPath = lastSeparatorIndex === -1 
+            ? '' 
+            : filePath.substring(0, lastSeparatorIndex);
+
+        const fileNameWithExt = lastSeparatorIndex === -1 
+            ? filePath 
+            : filePath.substring(lastSeparatorIndex + 1);
+            
+        const fileNameWithoutExt = fileNameWithExt.includes('.')
+            ? fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf('.'))
+            : fileNameWithExt;
+
+        const finalOutputFolder = directoryPath ? `${outputFolder}\\${directoryPath}` : outputFolder;
+        const outputFileName = fileNameWithoutExt;
 
         try {
             setLoading(true);
             
             // 直接提交整个输入数组，保持顺序
             const formData: ProcessData = {
-                inputs: inputs.map(({ id, ...rest }) => rest), // 移除id，只保留type和value
-                outputFolder,
-                outputFileName
+                inputs: inputs.map(({ id, type, value }) => ({
+                    type,
+                    value: type === 'file' ? `${sourceFolder}\\${value}` : value
+                })),
+                outputFolder: finalOutputFolder,
+                outputFileName: `${outputFileName}.${outputFileType}`
             };
 
             // 使用相对路径，将通过Vite代理转发到后端服务器
-            const response = await axios.post<ProcessResult>('/process-file', formData);
+            const response = await axios.post<ProcessResult>('/api/process-file', formData);
             messageApi.success('转换成功');
             
             // 设置结果
@@ -150,9 +214,30 @@ const FileProcessForm: React.FC = () => {
         <div className="form-container" style={{ width: '100%', padding: '20px' }}>
             {contextHolder}
 
+            <div className="section" style={{ marginBottom: '20px', width: '100%' }}>
+                <h3>提取文件</h3>
+                <div style={{ display: 'flex', marginBottom: '10px' }}>
+                    <Input
+                        value={sourceFolder}
+                        onChange={(e) => setSourceFolder(e.target.value)}
+                        placeholder="请输入源代码根目录"
+                        style={{ flex: 1, marginRight: '10px' }}
+                    />
+                    <Input
+                        value={fileType}
+                        onChange={(e) => setFileType(e.target.value)}
+                        placeholder="请输入文件类型，如 .js,.ts"
+                        style={{ flex: 1, marginRight: '10px' }}
+                    />
+                    <Button type="primary" onClick={handleExtractFiles} loading={extractLoading}>
+                        提取
+                    </Button>
+                </div>
+            </div>
+
             <div className="button-group" style={{ marginBottom: '20px' }}>
                 <Button type="primary" onClick={addFileInput} style={{ marginRight: '10px' }}>
-                    添加文件地址
+                    添加文件
                 </Button>
                 <Button type="primary" onClick={addPromptInput}>
                     添加提示词
@@ -164,12 +249,19 @@ const FileProcessForm: React.FC = () => {
                     <div key={input.id} className="input-row" style={{ marginBottom: '10px', width: '100%' }}>
                         <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
                             {input.type === 'file' ? (
-                                <Input
+                                <Select
                                     value={input.value}
-                                    onChange={(e) => updateInput(input.id, e.target.value)}
-                                    placeholder="请输入文件的完整路径"
+                                    onChange={(value) => updateInput(input.id, value)}
+                                    placeholder="请选择文件"
                                     style={{ flex: 1 }}
-                                />
+                                    showSearch
+                                >
+                                    {fileList.map(file => (
+                                        <Select.Option key={file} value={file}>
+                                            {file}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
                             ) : (
                                 <Input.TextArea
                                     value={input.value}
@@ -215,9 +307,9 @@ const FileProcessForm: React.FC = () => {
                             style={{ flex: 1, marginRight: '10px' }}
                         />
                         <Input
-                            value={outputFileName}
-                            onChange={(e) => setOutputFileName(e.target.value)}
-                            placeholder="请输入输出文件名"
+                            value={outputFileType}
+                            onChange={(e) => setOutputFileType(e.target.value)}
+                            placeholder="请输入输出文件类型, 如 .tsx"
                             style={{ flex: 1 }}
                         />
                     </div>

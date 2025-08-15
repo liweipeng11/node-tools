@@ -20,7 +20,7 @@ function extractContentFromMarkdown(markdown) {
   return match ? match[1].trim() : markdown;
 }
 
-app.post('/process-file', async (req, res) => {
+app.post('/api/process-file', async (req, res) => {
   const { inputs, outputFileName, outputFolder } = req.body;
 
   if (!inputs || !outputFileName || !outputFolder) {
@@ -98,7 +98,7 @@ async function getFiles(dir, fileType) {
   return Array.prototype.concat(...files).filter(Boolean);
 }
 
-app.post('/list-files', async (req, res) => {
+app.post('/api/list-files', async (req, res) => {
   const { folderPath, fileType } = req.body;
 
   if (!folderPath || !fileType) {
@@ -107,9 +107,10 @@ app.post('/list-files', async (req, res) => {
 
   try {
     const files = await getFiles(folderPath, fileType);
+    const relativeFiles = files.map(file => path.relative(folderPath, file));
     res.status(200).json({
       success: true,
-      data: files,
+      data: relativeFiles,
     });
   } catch (error) {
     console.error(error);
