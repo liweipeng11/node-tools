@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const parseJspToAst = require('./parser');
+const transformJspAstToReactAst = require('./transform');
+
 
 
 function findJspFiles(dir, jspFiles = []) {
@@ -35,12 +37,15 @@ try {
     jspFileInfo.forEach(info => {
         const jspCode = fs.readFileSync(info.fullPath, "utf-8");
         const ast = parseJspToAst(jspCode);
+        // const reactAst = transformJspAstToReactAst(ast);
+
         // 将AST保存到JSON文件
         fs.writeFileSync(`./data/${info.fileName.replace('.jsp','.json')}`, JSON.stringify(ast, null, 2));
     });
-    // const jspCode = fs.readFileSync('E:\\work\\aise\\uob switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\errorPage.jsp', "utf-8");
+    // const jspCode = fs.readFileSync('E:\\work\\aise\\uob switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp', "utf-8");
     // const ast = parseJspToAst(jspCode);
-    // console.log(JSON.stringify(ast, null, 2))
+    // const reactAst = transformJspAstToReactAst(ast);
+    // console.log(JSON.stringify(reactAst, null, 2))
 
 } catch (err) {
     console.error('Error occurred while searching for JSP files:', err);

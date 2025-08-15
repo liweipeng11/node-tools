@@ -94,16 +94,16 @@ function parseJspToAst(jspString) {
       });
     },
 
-    // oncomment(data) {
-    //     // 捕获 HTML 注释 // JSP 注释 <%-- --%> 不会被这个回调捕获
-    //     const trimmedData = data.trim();
-    //     if (trimmedData.length > 0) {
-    //         getCurrentParent().children.push({
-    //             type: "Comment",
-    //             value: trimmedData
-    //         });
-    //     }
-    // }
+    oncomment(data) {
+        // 捕获 HTML 注释 // JSP 注释 <%-- --%> 不会被这个回调捕获
+        const trimmedData = data.trim();
+        if (trimmedData.length > 0) {
+            getCurrentParent().children.push({
+                type: "Comment",
+                value: trimmedData
+            });
+        }
+    }
   },parserOptions);
 
   parser.write(jspString);

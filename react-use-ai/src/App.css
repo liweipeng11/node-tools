@@ -1,0 +1,22 @@
+#root {
+  width: 100%;
+}
+
+.app-container {
+  width: 100%;
+}
+
+.app-container h1 {
+  margin-bottom: 2rem;
+  color: #1677ff;
+}
+
+.form-container {
+  width: 100%;
+}
+
+.form-container h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #333;
+}
