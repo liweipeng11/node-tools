@@ -33,16 +33,6 @@ app.post('/process-file', async (req, res) => {
 
     const outputFilePath = path.join(outputFolder, outputFileName);
 
-    // 判断文件名是否存在，如果存在直接结束，抛出错误
-    try {
-      await fs.stat(outputFilePath);
-      return res.status(400).json({ error: `File already exists: ${outputFilePath}` });
-    } catch (error) {
-      // 如果错误码不是'ENOENT'(文件不存在)，则抛出其他错误
-      if (error.code !== 'ENOENT') {
-        throw error;
-      }
-    }
 
     // 循环inputs，将提示词和文件内容拼接起来
     const contentParts = [];
