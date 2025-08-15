@@ -80,6 +80,46 @@ app.post('/process-file', async (req, res) => {
   }
 });
 
+// 递归获取指定类型的文件
+async function getFiles(dir, fileType) {
+  const dirents = await fs.readdir(dir, { withFileTypes: true });
+  const files = await Promise.all(
+    dirents.map(dirent => {
+      const res = path.resolve(dir, dirent.name);
+      if (dirent.isDirectory()) {
+        return getFiles(res, fileType);
+      } else {
+        if (path.extname(res) === `.${fileType}`) {
+          return res;
+        }
+      }
+    })
+  );
+  return Array.prototype.concat(...files).filter(Boolean);
+}
+
+app.post('/list-files', async (req, res) => {
+  const { folderPath, fileType } = req.body;
+
+  if (!folderPath || !fileType) {
+    return res.status(400).json({ error: 'Missing required parameters: folderPath or fileType' });
+  }
+
+  try {
+    const files = await getFiles(folderPath, fileType);
+    res.status(200).json({
+      success: true,
+      data: files,
+    });
+  } catch (error) {
+    console.error(error);
+    if (error.code === 'ENOENT') {
+      return res.status(400).json({ error: `Directory not found: ${folderPath}` });
+    }
+    res.status(500).json({ error: 'An error occurred while listing files.' });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

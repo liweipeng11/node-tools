@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { Input, Button, message } from 'antd';
+import React, { useState, useMemo } from 'react';
+import { Input, Button, message, Modal } from 'antd';
 import axios from 'axios';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { json } from '@codemirror/lang-json';
+import { css } from '@codemirror/lang-css';
 
 interface InputItem {
-    id: string;
+    id?: string;
     type: 'file' | 'prompt';
     value: string;
 }
@@ -27,6 +31,21 @@ const FileProcessForm: React.FC = () => {
     const [outputFileName, setOutputFileName] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<ProcessResult | null>(null);
+    const [isResultModalVisible, setIsResultModalVisible] = useState(false);
+
+    const codeMirrorExtensions = useMemo(() => {
+        const path = result?.data?.path || '';
+        if (path.endsWith('.json')) {
+            return [json()];
+        }
+        if (path.endsWith('.js') || path.endsWith('.jsx') || path.endsWith('.ts') || path.endsWith('.tsx')) {
+            return [javascript({ jsx: true, typescript: true })];
+        }
+        if (path.endsWith('.css')) {
+            return [css()];
+        }
+        return [];
+    }, [result?.data?.path]);
 
     const addFileInput = () => {
         const newId = `input-${Date.now()}`;
@@ -208,39 +227,50 @@ const FileProcessForm: React.FC = () => {
                     <Button type="primary" onClick={handleConvert} loading={loading}>
                         转换
                     </Button>
+                    {result && (
+                        <Button onClick={() => setIsResultModalVisible(true)} style={{ marginLeft: '10px' }}>
+                            查看结果
+                        </Button>
+                    )}
                 </div>
 
                 {result && (
-                    <div className="result-section" style={{ marginTop: '30px', width: '100%' }}>
-                        <h3>转换结果</h3>
-                        <div style={{ 
-                            padding: '15px', 
-                            backgroundColor: result.success ? '#f6ffed' : '#fff2f0',
-                            border: `1px solid ${result.success ? '#b7eb8f' : '#ffccc7'}`,
-                            borderRadius: '4px'
-                        }}>
-                            <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
-                                {result.success ? '转换成功' : '转换失败'}
-                            </div>
-                            <div>{result.message}</div>
-                            {result.data && (
-                                <div style={{ marginTop: '10px' }}>
-                                    <pre style={{ 
-                                        backgroundColor: '#f5f5f5', 
-                                        padding: '10px', 
-                                        borderRadius: '4px',
-                                        maxHeight: '300px',
-                                        overflow: 'auto'
-                                    }}>
-                                        {typeof result.data === 'string' 
-                                            ? result.data 
-                                            : JSON.stringify(result.data, null, 2)
-                                        }
-                                    </pre>
+                    <Modal
+                        title="转换结果"
+                        open={isResultModalVisible}
+                        onCancel={() => setIsResultModalVisible(false)}
+                        footer={null}
+                        width="80%"
+                    >
+                        <div className="result-section" style={{ marginTop: '20px', width: '100%' }}>
+                            <div style={{
+                                padding: '15px',
+                                backgroundColor: result.success ? '#f6ffed' : '#fff2f0',
+                                border: `1px solid ${result.success ? '#b7eb8f' : '#ffccc7'}`,
+                                borderRadius: '4px'
+                            }}>
+                                <div style={{ marginBottom: '10px', fontWeight: 'bold' }}>
+                                    {result.success ? '转换成功' : '转换失败'}
                                 </div>
-                            )}
+                                <div>{result.message}</div>
+                                {result.data?.content && (
+                                    <div style={{ marginTop: '10px' }}>
+                                        <CodeMirror
+                                            value={result.data.content}
+                                            extensions={codeMirrorExtensions}
+                                            readOnly
+                                            style={{
+                                                border: '1px solid #d9d9d9',
+                                                borderRadius: '4px',
+                                                maxHeight: '60vh',
+                                                overflow: 'auto'
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </Modal>
                 )}
             </div>
         </div>
