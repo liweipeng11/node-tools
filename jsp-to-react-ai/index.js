@@ -52,22 +52,40 @@ app.post('/api/process-file', async (req, res) => {
     let messages = [
       { role: 'user', content: combinedContent }
     ];
-
-    // Log the messages array to log.txt
-    const logEntry = `\n\n\n\n\n--- Request at ${new Date().toISOString()} ---\n${JSON.stringify(messages, null, 2)}`;
-    await fs.appendFile('log.txt', logEntry, 'utf-8');
-
-    const stream = await openai.chat.completions.create({
-      messages,
-      model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
-      temperature: 0.5,
-      stream: true,
-    });
-
     let aiContent = '';
-    for await (const chunk of stream) {
-      aiContent += chunk.choices[0]?.delta?.content || '';
-    }
+    let finishReason;
+
+    do {
+      // Log the messages array to log.txt
+      const logEntry = `\n\n\n\n\n--- Request at ${new Date().toISOString()} ---\n${JSON.stringify(messages, null, 2)}`;
+      await fs.appendFile('log.txt', logEntry, 'utf-8');
+
+      const stream = await openai.chat.completions.create({
+        messages,
+        model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+        temperature: 0.5,
+        stream: true,
+        max_tokens: 4000
+      });
+
+      let currentIterationContent = '';
+      for await (const chunk of stream) {
+        const contentPart = chunk.choices[0]?.delta?.content || '';
+        currentIterationContent += contentPart;
+        if (chunk.choices[0]?.finish_reason) {
+          finishReason = chunk.choices[0].finish_reason;
+        }
+      }
+
+      aiContent += currentIterationContent;
+
+      if (finishReason === 'length') {
+        // Append the assistant's partial message from this iteration to the history
+        messages.push({ role: 'assistant', content: currentIterationContent });
+        // Add a new user message to prompt the model to continue
+        messages.push({ role: 'user', content: '请紧接着上面的内容继续写，确保无缝衔接，确保语法正确，不要重复，也不要说“好的，我会继续”这类的话，直接开始写。' });
+      }
+    } while (finishReason === 'length');
     const extractedContent = extractContentFromMarkdown(aiContent);
 
     // 返回的内容不仅要存放到指定的文件夹中

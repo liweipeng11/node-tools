@@ -43,9 +43,9 @@ const BatchProcessForm: React.FC = () => {
     const [outputFolder, setOutputFolder] = useState('');
     const [outputFileType, setOutputFileType] = useState('');
     const [fileSources, setFileSources] = useState<FileSource[]>([]);
-    
+
     const [conversionQueue, setConversionQueue] = useState<ConversionTask[]>([]);
-    const [isProcessing, setIsProcessing] = useState(false);
+    const [allTasksCompleted, setAllTasksCompleted] = useState(true);
 
     const [currentResult, setCurrentResult] = useState<ProcessResult | null>(null);
     const [isResultModalVisible, setIsResultModalVisible] = useState(false);
@@ -61,40 +61,27 @@ const BatchProcessForm: React.FC = () => {
 
     // --- Effects ---
     useEffect(() => {
-        const processNextInQueue = async () => {
-            const nextTask = conversionQueue.find(task => task.status === 'pending');
-            if (!nextTask || isProcessing) {
-                if (!nextTask && isProcessing) {
-                    setIsProcessing(false);
-                    messageApi.success('所有任务处理完成');
-                }
-                return;
-            }
+        const CONCURRENCY_LIMIT = 3;
 
-            setIsProcessing(true);
-            
-            setConversionQueue(prev => prev.map(task => 
-                task.id === nextTask.id ? { ...task, status: 'processing' } : task
-            ));
-
+        const processTask = async (taskToProcess: ConversionTask) => {
             try {
-                const fileValueForTask = JSON.stringify({ sourcePath: nextTask.sourcePath, file: nextTask.fileName });
+                const fileValueForTask = JSON.stringify({ sourcePath: taskToProcess.sourcePath, file: taskToProcess.fileName });
 
                 const apiInputs = inputs.map(uiInput => {
                     if (uiInput.type === 'prompt') {
                         return { type: 'prompt', value: uiInput.value as string };
                     }
-                    
+
                     if (uiInput.type === 'file' && Array.isArray(uiInput.value) && uiInput.value.includes(fileValueForTask)) {
-                        return { type: 'file', value: `${nextTask.sourcePath}\\${nextTask.fileName}` };
+                        return { type: 'file', value: `${taskToProcess.sourcePath}\\${taskToProcess.fileName}` };
                     } else {
                         return { type: 'file', value: '' }; // Placeholder to maintain order
                     }
                 });
 
-                const lastSeparatorIndex = Math.max(nextTask.fileName.lastIndexOf('\\'), nextTask.fileName.lastIndexOf('/'));
-                const directoryPath = lastSeparatorIndex === -1 ? '' : nextTask.fileName.substring(0, lastSeparatorIndex);
-                const fileNameWithExt = lastSeparatorIndex === -1 ? nextTask.fileName : nextTask.fileName.substring(lastSeparatorIndex + 1);
+                const lastSeparatorIndex = Math.max(taskToProcess.fileName.lastIndexOf('\\'), taskToProcess.fileName.lastIndexOf('/'));
+                const directoryPath = lastSeparatorIndex === -1 ? '' : taskToProcess.fileName.substring(0, lastSeparatorIndex);
+                const fileNameWithExt = lastSeparatorIndex === -1 ? taskToProcess.fileName : taskToProcess.fileName.substring(lastSeparatorIndex + 1);
                 const fileNameWithoutExt = fileNameWithExt.includes('.') ? fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf('.')) : fileNameWithExt;
 
                 const finalOutputFolder = directoryPath ? `${outputFolder}\\${directoryPath}` : outputFolder;
@@ -106,22 +93,67 @@ const BatchProcessForm: React.FC = () => {
                     outputFileName: finalOutputFileName,
                 });
 
-                setConversionQueue(prev => prev.map(task =>
-                    task.id === nextTask.id ? { ...task, status: 'success', result: response.data } : task
-                ));
+                if (response.data.success) {
+                    try {
+                        if (outputFileType === 'json') {
+                            JSON.parse(response.data.data.content);
+                        }
+
+                        setConversionQueue(prev => prev.map(task =>
+                            task.id === taskToProcess.id ? { ...task, status: 'success', result: response.data } : task
+                        ));
+                    } catch (e) {
+                        const errorResult: ProcessResult = {
+                            success: false,
+                            message: '转换失败：返回的内容不是有效的JSON格式。',
+                            data: response.data.data
+                        };
+                        setConversionQueue(prev => prev.map(task =>
+                            task.id === taskToProcess.id ? { ...task, status: 'error', result: errorResult } : task
+                        ));
+                    }
+                } else {
+                    setConversionQueue(prev => prev.map(task =>
+                        task.id === taskToProcess.id ? { ...task, status: 'error', result: response.data } : task
+                    ));
+                }
             } catch (error) {
-                console.error(`转换失败: ${nextTask.fileName}`, error);
-                const result = { success: false, message: `转换失败: ${nextTask.fileName}` };
+                console.error(`转换失败: ${taskToProcess.fileName}`, error);
+                const result = { success: false, message: `转换失败: ${taskToProcess.fileName}` };
                 setConversionQueue(prev => prev.map(task =>
-                    task.id === nextTask.id ? { ...task, status: 'error', result } : task
+                    task.id === taskToProcess.id ? { ...task, status: 'error', result } : task
                 ));
-            } finally {
-                setIsProcessing(false);
             }
         };
 
-        processNextInQueue();
-    }, [conversionQueue, isProcessing, inputs, outputFolder, outputFileType, messageApi]);
+        const currentlyProcessingCount = conversionQueue.filter(t => t.status === 'processing').length;
+        const pendingTasks = conversionQueue.filter(t => t.status === 'pending');
+
+        if (pendingTasks.length === 0 && currentlyProcessingCount === 0) {
+            if (conversionQueue.length > 0 && !allTasksCompleted) {
+                messageApi.success('所有任务处理完成');
+                setAllTasksCompleted(true);
+            }
+            return;
+        }
+
+        const slotsToFill = CONCURRENCY_LIMIT - currentlyProcessingCount;
+        if (slotsToFill <= 0 || pendingTasks.length === 0) {
+            return;
+        }
+
+        const tasksToStart = pendingTasks.slice(0, slotsToFill);
+
+        setConversionQueue(prevQueue => {
+            const taskIdsToStart = tasksToStart.map(t => t.id);
+            return prevQueue.map(t =>
+                taskIdsToStart.includes(t.id) ? { ...t, status: 'processing' } : t
+            );
+        });
+
+        tasksToStart.forEach(task => processTask(task));
+
+    }, [conversionQueue, inputs, outputFolder, outputFileType, messageApi, allTasksCompleted]);
 
 
     // --- File Source Handlers ---
@@ -187,7 +219,7 @@ const BatchProcessForm: React.FC = () => {
     const moveInput = (id: string, direction: 'up' | 'down') => {
         const index = inputs.findIndex(i => i.id === id);
         if ((direction === 'up' && index === 0) || (direction === 'down' && index === inputs.length - 1)) return;
-        
+
         const newInputs = [...inputs];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
         [newInputs[index], newInputs[targetIndex]] = [newInputs[targetIndex], newInputs[index]];
@@ -198,7 +230,7 @@ const BatchProcessForm: React.FC = () => {
         const targetInput = inputs.find(input => input.id === inputId);
         if (!targetInput || targetInput.type !== 'file') return;
 
-        const allFilesFromSources = fileSources.flatMap(source => 
+        const allFilesFromSources = fileSources.flatMap(source =>
             source.files.map(file => JSON.stringify({ sourcePath: source.path, file: file }))
         );
 
@@ -206,6 +238,13 @@ const BatchProcessForm: React.FC = () => {
         const allSelected = allFilesFromSources.length > 0 && allFilesFromSources.length === currentlySelected.length;
 
         updateInput(inputId, allSelected ? [] : allFilesFromSources);
+    };
+
+    const handleRetry = (taskId: string) => {
+        setAllTasksCompleted(false);
+        setConversionQueue(prev => prev.map(task =>
+            task.id === taskId ? { ...task, status: 'pending', result: undefined } : task
+        ));
     };
 
     // --- Conversion Handlers ---
@@ -246,6 +285,7 @@ const BatchProcessForm: React.FC = () => {
             return;
         }
 
+        setAllTasksCompleted(false);
         setConversionQueue(tasks);
     };
 
@@ -253,6 +293,8 @@ const BatchProcessForm: React.FC = () => {
         setCurrentResult(result);
         setIsResultModalVisible(true);
     };
+
+    const isRunning = conversionQueue.length > 0 && !allTasksCompleted;
 
     // --- Render ---
     return (
@@ -346,8 +388,8 @@ const BatchProcessForm: React.FC = () => {
                 </div>
             </div>
 
-            <Button type="primary" onClick={handleBatchConvert} loading={isProcessing} disabled={conversionQueue.length > 0 && !conversionQueue.every(t => t.status === 'success' || t.status === 'error')}>
-                {isProcessing ? '转换中...' : '开始批量转换'}
+            <Button type="primary" onClick={handleBatchConvert} loading={isRunning} disabled={isRunning}>
+                {isRunning ? '转换中...' : '开始批量转换'}
             </Button>
 
             {/* Conversion Status */}
@@ -360,8 +402,9 @@ const BatchProcessForm: React.FC = () => {
                         renderItem={item => (
                             <List.Item
                                 actions={[
-                                    item.status === 'success' && item.result ? (<Button type="link" onClick={() => viewResult(item.result!)}>查看结果</Button>) : null,
-                                ]}
+                                    item.result && (<Button type="link" onClick={() => viewResult(item.result)}>查看结果</Button>),
+                                    item.status === 'error' && (<Button type="link" onClick={() => handleRetry(item.id)}>重试</Button>)
+                                ].filter(Boolean)}
                             >
                                 <List.Item.Meta title={item.fileName} description={item.sourcePath} />
                                 {item.status === 'pending' && <Tag color="default">排队中</Tag>}
