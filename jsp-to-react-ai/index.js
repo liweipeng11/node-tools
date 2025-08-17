@@ -10,6 +10,7 @@ app.use(express.json());
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: process.env.OPENAI_API_BASE,
+  // logLevel: 'debug'
 });
 
 function extractContentFromMarkdown(markdown) {
@@ -48,15 +49,25 @@ app.post('/api/process-file', async (req, res) => {
     // 拼接的时候需要使用 \n 进行换行
     const combinedContent = contentParts.join('\n');
 
-    const completion = await openai.chat.completions.create({
-      messages: [
-        { role: 'user', content: combinedContent }
-      ],
+    let messages = [
+      { role: 'user', content: combinedContent }
+    ];
+
+    // Log the messages array to log.txt
+    const logEntry = `\n\n\n\n\n--- Request at ${new Date().toISOString()} ---\n${JSON.stringify(messages, null, 2)}`;
+    await fs.appendFile('log.txt', logEntry, 'utf-8');
+
+    const stream = await openai.chat.completions.create({
+      messages,
       model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
-      temperature: 0
+      temperature: 0.5,
+      stream: true,
     });
 
-    const aiContent = completion.choices[0].message.content;
+    let aiContent = '';
+    for await (const chunk of stream) {
+      aiContent += chunk.choices[0]?.delta?.content || '';
+    }
     const extractedContent = extractContentFromMarkdown(aiContent);
 
     // 返回的内容不仅要存放到指定的文件夹中
