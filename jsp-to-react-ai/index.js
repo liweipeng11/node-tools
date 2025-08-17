@@ -14,7 +14,7 @@ const openai = new OpenAI({
 
 function extractContentFromMarkdown(markdown) {
   // This regex finds content within ```...```, optionally with a language tag.
-  const regex = /```(?:[a-zA-Z0-9]+\n)?([\s\S]+?)\n?```/;
+  const regex = /```(?:.*?\n)?([\s\S]*?)```/s;
   const match = markdown.match(regex);
   // If a match is found, return the captured group, otherwise return the original string.
   return match ? match[1].trim() : markdown;

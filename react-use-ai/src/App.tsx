@@ -20,9 +20,9 @@ function App() {
             <Menu.Item key="/">
               <Link to="/">单次转换</Link>
             </Menu.Item>
-            {/* <Menu.Item key="/batch">
+            <Menu.Item key="/batch">
               <Link to="/batch">批量转换</Link>
-            </Menu.Item> */}
+            </Menu.Item>
           </Menu>
         </Header>
         <Content style={{ padding: '0 50px' }}>
