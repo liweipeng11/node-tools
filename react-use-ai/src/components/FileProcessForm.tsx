@@ -205,7 +205,13 @@ const FileProcessForm: React.FC = () => {
         const fileNameWithoutExt = fileNameWithExt.includes('.') ? fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf('.')) : fileNameWithExt;
 
         const finalOutputFolder = directoryPath ? `${outputFolder}\\${directoryPath}` : outputFolder;
-        const finalName = outputFileName.trim() ? outputFileName.trim() : fileNameWithoutExt;
+        
+        // 确保输出文件名使用大驼峰命名法
+        let finalName = outputFileName.trim() ? outputFileName.trim() : fileNameWithoutExt;
+        // 如果文件名不是以大写字母开头，则转换为大驼峰命名
+        if (finalName && finalName.length > 0 && (finalName[0] < 'A' || finalName[0] > 'Z')) {
+            finalName = finalName[0].toUpperCase() + finalName.slice(1);
+        }
 
         try {
             setLoading(true);

@@ -61,7 +61,7 @@ const BatchProcessForm: React.FC = () => {
 
     // --- Effects ---
     useEffect(() => {
-        const CONCURRENCY_LIMIT = 3;
+        const CONCURRENCY_LIMIT = 6;
 
         const processTask = async (taskToProcess: ConversionTask) => {
             try {
@@ -85,7 +85,15 @@ const BatchProcessForm: React.FC = () => {
                 const fileNameWithoutExt = fileNameWithExt.includes('.') ? fileNameWithExt.substring(0, fileNameWithExt.lastIndexOf('.')) : fileNameWithExt;
 
                 const finalOutputFolder = directoryPath ? `${outputFolder}\\${directoryPath}` : outputFolder;
-                const finalOutputFileName = `${fileNameWithoutExt}.${outputFileType || 'tsx'}`;
+                
+                // 确保输出文件名使用大驼峰命名法
+                let finalFileNameWithoutExt = fileNameWithoutExt;
+                // 如果文件名不是以大写字母开头，则转换为大驼峰命名
+                if (finalFileNameWithoutExt && finalFileNameWithoutExt.length > 0 && (finalFileNameWithoutExt[0] < 'A' || finalFileNameWithoutExt[0] > 'Z')) {
+                    finalFileNameWithoutExt = finalFileNameWithoutExt[0].toUpperCase() + finalFileNameWithoutExt.slice(1);
+                }
+                
+                const finalOutputFileName = `${finalFileNameWithoutExt}.${outputFileType || 'tsx'}`;
 
                 const response = await axios.post<ProcessResult>('/api/process-file', {
                     inputs: apiInputs,
@@ -403,7 +411,7 @@ const BatchProcessForm: React.FC = () => {
                             <List.Item
                                 actions={[
                                     item.result && (<Button type="link" onClick={() => viewResult(item.result)}>查看结果</Button>),
-                                    item.status === 'error' && (<Button type="link" onClick={() => handleRetry(item.id)}>重试</Button>)
+                                    (item.status === 'error' || item.status === 'success') && (<Button type="link" onClick={() => handleRetry(item.id)}>重试</Button>)
                                 ].filter(Boolean)}
                             >
                                 <List.Item.Meta title={item.fileName} description={item.sourcePath} />
