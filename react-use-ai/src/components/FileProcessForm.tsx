@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Input, Button, message, Modal, Select, Space } from 'antd';
 import axios from 'axios';
 import CodeMirror from '@uiw/react-codemirror';
@@ -189,11 +189,9 @@ const FileProcessForm: React.FC = () => {
         }
 
         let filePath = '';
-        let sourcePath = '';
         try {
             const parsed = JSON.parse(fileInput.value);
             filePath = parsed.file;
-            sourcePath = parsed.sourcePath;
         } catch (e) {
             messageApi.error('文件输入值无效');
             return;

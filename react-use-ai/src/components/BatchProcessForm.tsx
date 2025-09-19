@@ -345,9 +345,10 @@ const BatchProcessForm: React.FC = () => {
                                         onChange={(value) => updateInput(input.id, value)}
                                         placeholder="请先提取文件, 然后选择"
                                         style={{ flex: 1 }}
-                                        filterOption={(inputValue, option) =>
-                                            (option?.children ?? '').toLowerCase().includes(inputValue.toLowerCase())
-                                        }
+                                        filterOption={(inputValue, option) => {
+                                            const children = option?.children as unknown as string;
+                                            return children?.toLowerCase().includes(inputValue.toLowerCase()) || false;
+                                        }}
                                     >
                                         {fileSources.map(source => (
                                             <Select.OptGroup key={source.id} label={source.path}>
@@ -410,7 +411,7 @@ const BatchProcessForm: React.FC = () => {
                         renderItem={item => (
                             <List.Item
                                 actions={[
-                                    item.result && (<Button type="link" onClick={() => viewResult(item.result)}>查看结果</Button>),
+                                    item.result && (<Button type="link" onClick={() => viewResult(item.result!)}>查看结果</Button>),
                                     (item.status === 'error' || item.status === 'success') && (<Button type="link" onClick={() => handleRetry(item.id)}>重试</Button>)
                                 ].filter(Boolean)}
                             >

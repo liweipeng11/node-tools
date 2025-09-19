@@ -1,0 +1,646 @@
+{
+  "workflows": [
+    {
+      "id": "workflow-1758093490939",
+      "name": "dom",
+      "description": "",
+      "steps": [
+        {
+          "id": "step-1758094491579",
+          "name": "步骤 1",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758094494626",
+                "name": "jsp",
+                "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758094529291",
+                "content": "jsp源码为： {{jsp}}\n必要规则：\n1.忽略jsp:forward标签\n2.html标签必须为小写\n3.忽略所有注释\n严格按照我的要求生成，不要做思维发散，只生成json",
+                "fileReferences": [
+                  "file-1758094494626"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\dom\\json",
+            "outputFileName": "Header.json",
+            "apiEndpoint": "/api/process-file",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 0
+        },
+        {
+          "id": "step-1758094586716",
+          "name": "步骤 2",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758094589670",
+                "name": "json",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\dom\\json\\Header.json"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758094611179",
+                "content": "json代码为：{{json}}\n必要规则：\n1.忽略script标签\n2.组件内容使用<></>包裹\n3.useState声明的变量要有对应的setter，且提供默认值\n4.attributes中的属性要保持key:value的形式\n5.tagName为text时不是一个标签，而是纯文本",
+                "fileReferences": [
+                  "file-1758094589670"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\clr-react-app-ts\\src\\pages",
+            "outputFileName": "Header.tsx",
+            "apiEndpoint": "/api/process-file",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 1
+        }
+      ],
+      "createdAt": "2025-09-17T07:18:10.939Z",
+      "updatedAt": "2025-09-18T06:10:28.265Z"
+    },
+    {
+      "id": "workflow-1758188177814",
+      "name": "逻辑",
+      "description": "",
+      "steps": [
+        {
+          "id": "step-1758189288028",
+          "name": "提取功能矩阵表",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758189297828",
+                "name": "jsp",
+                "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758189313364",
+                "content": "jsp源码为：{{jsp}}\n对该jsp代码所实现的业务功能进行分析，找出每个功能对应的dom元素，以及对应dom事件的触发方式和触发事件的方法建立功能矩阵表，输出为json",
+                "fileReferences": [
+                  "file-1758189297828"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\business\\json1\\功能矩阵表",
+            "outputFileName": "Header.json",
+            "apiEndpoint": "/api/process-file-direct?model=deepseek",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 0
+        },
+        {
+          "id": "step-1758189493228",
+          "name": "提取变量矩阵表",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758189495621",
+                "name": "jsp",
+                "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758189518180",
+                "content": "jsp源码为：{{jsp}}\njson结构：\n1.变量字段\n2.变量所处环境（是否java代码内）\n3.变量值来源\n4.变量用途\n5.变量相关的判断逻辑\n对该jsp源码中的逐个变量按照上述的json结构进行分析建立变量矩阵表，输出为json。",
+                "fileReferences": [
+                  "file-1758189495621"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\business\\json1\\变量矩阵表",
+            "outputFileName": "Header.json",
+            "apiEndpoint": "/api/process-file-direct?model=deepseek",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 1
+        },
+        {
+          "id": "step-1758189570428",
+          "name": "修改tsx代码中的变量",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758189584789",
+                "name": "功能矩阵表",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\business\\json1\\功能矩阵表\\Header.json"
+              },
+              {
+                "id": "file-1758189613940",
+                "name": "变量矩阵表",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\business\\json1\\变量矩阵表\\Header.json"
+              },
+              {
+                "id": "file-1758189632612",
+                "name": "jsp",
+                "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+              },
+              {
+                "id": "file-1758189643460",
+                "name": "tsx",
+                "path": "E:\\work\\aise\\uob-switch\\clr-react-app-ts\\src\\pages\\Header.tsx"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758189629893",
+                "content": "功能矩阵表：{{功能矩阵表}}\n变量矩阵表：{{变量矩阵表}}\njsp源码：{{jsp}}\ntsx代码：{{tsx}}\n基于功能矩阵表json和变量矩阵表json和jsp源码作为输入参数，在tsx目标文件的基础上对每个变量的定义和初始化值进行修改。给我完整的代码，要求如下：\n1.直接操作修改目标文件，过程中需要遵守代码书写规范\n2.保证变量名称和jsp中的保持一致\n4.如果存在jsp变量来源是session的(session.getAttribute)，react中在sessionStorage中取值，sessionStorage中的key要和被使用变量名一致\n5.如果存在jsp变量来源是api请求的(request.getAttribute)，react中使用axios请求，接口名称使用\"XXX\"代替\n6.如果存在jsp变量来源是组件间传递参数的(request.getParameter)，react中使用props组件传参\n7.禁止使用任何组件库（如antd等）\n8.禁止模拟实现java代码中的工具类",
+                "fileReferences": [
+                  "file-1758189584789",
+                  "file-1758189613940",
+                  "file-1758189632612",
+                  "file-1758189643460"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\clr-react-app-ts\\src\\pages",
+            "outputFileName": "Header.tsx",
+            "apiEndpoint": "/api/process-file-direct?model=deepseek",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 2
+        },
+        {
+          "id": "step-1758189743811",
+          "name": "提取函数矩阵表",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758189755933",
+                "name": "jsp",
+                "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758189770931",
+                "content": "jsp源码为：{{jsp}}\njson结构：\n1.函数/事件名称\n2.触发条件\n3.功能描述\n4.输入参数\n5.内部逻辑判断条件\n6.详细的表单校验规则\n7.核心逻辑\n8.涉及的dom元素\n9.被操作的变量\n10.交互流程\n11.内部调用的其他函数/事件\n12.输出结果\n13.表单提交\n对jsp代码中的逐个js逻辑按照上述的json结构进行分析总结建立函数矩阵表，输出为json。要求如下：\n1.所有JS函数逻辑正确识别\n2.业务功能覆盖完整\n3.用户交互流程清晰\n4.分析时要全量分析，不要只分析主要事件处理函数\n5.如果上述JSON结构缺少项，你可以自行补充",
+                "fileReferences": [
+                  "file-1758189755933"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\business\\json1\\函数矩阵表",
+            "outputFileName": "Header.json",
+            "apiEndpoint": "/api/process-file-direct?model=deepseek",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 3
+        },
+        {
+          "id": "step-1758189859692",
+          "name": "修改tsx代码中的函数",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758189878012",
+                "name": "功能矩阵表",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\business\\json1\\功能矩阵表\\Header.json"
+              },
+              {
+                "id": "file-1758189898085",
+                "name": "函数矩阵表",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\business\\json1\\函数矩阵表\\Header.json"
+              },
+              {
+                "id": "file-1758189914164",
+                "name": "jsp",
+                "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+              },
+              {
+                "id": "file-1758189928836",
+                "name": "tsx",
+                "path": "E:\\work\\aise\\uob-switch\\clr-react-app-ts\\src\\pages\\Header.tsx"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758189941469",
+                "content": "功能矩阵表：{{功能矩阵表}}\n函数矩阵表：{{函数矩阵表}}\njsp源码为：{{jsp}}\ntsx代码为：{{tsx}}\n\n基于功能矩阵表json和函数矩阵表json和jsp源码作为输入参数，在tsx目标文件的基础上进行完善每个函数的内容,给我全量的代码。要求如下：\n1.直接操作修改目标文件，过程中需要遵守代码书写规范\n2.保证变量名称和jsp中的保持一致\n3.保证业务功能正确的全量覆盖（包括<%...%>java写法中的逻辑）\n4.函数名称和内部使用到的变量名称要和jsp中的保持一致\n5.涉及的dom元素准确的绑定关联关系\n6.涉及的接口使用axios请求，保证接口名称不变、入参规则和校验不变\n7.不要出现\"实际应用中应该怎么样\"，我需要完整的逻辑\n8.对于所有非第三方库的资源（JS文件、图片），必须保持与JSP中完全相同的路径格式，不要使用process.env环境变量。\na)：如jsp中<script language=\"JavaScript1.2\" type=\"text/javascript\" src=\"<%=request.getContextPath()%>/pl.js\"></script>。react中import \"/pl.js\"\nb)：如jsp中< img src=\"<%=request.getContextPath()%>/images/glass.gif\">。react中 < img src=\"/images/glass.gif\" />\n9.JSP源码中未显示的含有具体内容的函数，依旧按照原方式调用（来源于引入的js文件），禁止添加任何新业务函数【重要】\na)：如<div class=\"body\" onload=\"checkCookie()\">但是jsp中没有具体实现checkCookie的内容，react中也不应该自己创建完善checkCookie内容\n10.JSP源码中防止攻击的过滤代码一律忽略\na):如<%=UAcRequestUtility.sanitize(userID)%>在react中应直接为userID\n11.禁止模拟实现java代码中的工具类",
+                "fileReferences": [
+                  "file-1758189878012",
+                  "file-1758189898085",
+                  "file-1758189914164",
+                  "file-1758189928836"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\clr-react-app-ts\\src\\pages",
+            "outputFileName": "Header.tsx",
+            "apiEndpoint": "/api/process-file-direct?model=deepseek",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 4
+        }
+      ],
+      "createdAt": "2025-09-18T09:36:17.814Z",
+      "updatedAt": "2025-09-19T06:09:35.757Z"
+    },
+    {
+      "id": "workflow-1758246299733",
+      "name": "接口调用",
+      "description": "",
+      "steps": [
+        {
+          "id": "step-1758246301997",
+          "name": "java变量提取为接口json",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758247070585",
+                "name": "jsp",
+                "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758247076735",
+                "content": "jsp代码为：{{jsp}}\n\n请分析 JSP 代码，仅关注并提取 JSP 中在页面渲染时从后端直接嵌入的动态变量（如通过 EL 表达式 ${...}、JSP 脚本片段 <%= ... %> 等在页面首次加载 / 渲染时直接嵌入的变量，不包含页面交互过程中通过 AJAX 异步请求获取的变量！），忽略纯静态 HTML、CSS、JavaScript 逻辑（尤其是 AJAX 请求相关代码）及 JSP 控制流标签（如 <s:iterator>、<s:if> 本身的语法结构）。需将这些嵌入变量中需要通过接口获取的业务数据，转换为符合 React 前后端分离架构的接口调用 JSON 描述，严格遵循以下规则:\n\n### 一、核心任务\n仅处理页面渲染时通过EL表达式(${...})或JSP脚本(<%= ... %>)嵌入的后端业务数据变量，排除静态资源/会话数据/请求参数等前端自治数据。\n\n### 二、JSON格式要求\n1. 必须使用以下固定中文key：\n[\"功能场景\",\"调用的接口\",\"接口调用时机\",\"请求的content-type\",\"上送参数\",\"参数的校验逻辑\",\"接口的调用方式\",\"请求成功的标志\",\"成功的处理逻辑\",\"接口返回数据赋给的变量\",\"请求失败的处理逻辑\",\"接口调用异常的处理\",\"备注\"]\n\n### 三、变量识别与合并规则\n1. **判断是否需要接口调用**：\n   - **必须提取**：\n     - 业务实体属性：`${product.price}`（不包括会话中获取的或该场景在前后端分离的react项目中不适合用接口获取的情况）\n     - 动态数据集合：`${orderList}`, `${reportData}`\n     - 单独规则：只要是通过`request.getAttribute()`获取的数据都进行提取\n   - **绝对排除**：\n     - 用户信息：例如`${user.age}，这种信息会在登录时获取并存储在前端，其他组件从状态管理中获取\n     - 资源路径：CSS/JS/图片路径（如`${styleSheet}`, `${logoPath}`）\n     - UI配置：主题名称/布局参数（如`${themeName}`）\n     - 会话数据：`${session.userId}`, `${token}`\n     - 请求参数：`${param.pageNo}`, `${query.sort}`\n     - 框架对象：`${pageContext}`, `${request.contextPath}`\n     - 计算值/常量：`${total}`, `${\"固定文本\"}`, `${100}`\n     - 未渲染变量：脚本中计算但未输出的变量 \n - **仅在以上的规则发生冲突时使用这个规则**：分析jsp的逻辑场景 和 应用于前后端分离模式的react项目的范式，然后进行判断\n\n2. **合并规则**：\n   - 显式父对象：`${a.prop1}`和`${a.prop2}`→合并为对象\"a\"\n   - 隐性关联：`${userName}`和`${userRole}`→合并为对象\"user\"\n   - 独立实体：`${product.name}`与`${order.amount}`→分属不同接口\n\n### 四、字段填写规范（React范式）\n- \"功能场景\"：描述组件业务用途（如\"订单组件-渲染订单基础信息\"）\n- \"调用的接口\"：\"待补充（需匹配接口文档）\"\n- \"接口调用时机\"：\n  - 组件挂载：`useEffect(() => {}, [])`\n  - 参数变化：`useEffect(() => {}, [param])`\n  - 未明确则填\"无\"\n- \"上送参数\"：JSON格式（如`{\"orderId\":\"从URL参数useParams()获取\"}`）\n- \"参数的校验逻辑\"：数组格式（如`[\"orderId必须为数字\"]`）\n- \"接口的调用方式\"：业务数据获取默认\"GET\"\n- \"请求成功的标志\"：`response.code === 200`\n- \"成功的处理逻辑\"：数组格式（如`[\"setOrder(response.data)更新状态\"]`）\n- \"接口返回数据赋给的变量\"：React状态变量名（如\"order\"）和JSP中的变量名保持一致\n- \"请求失败/异常处理\"：数组格式的错误处理\n- \"备注\"：必须包含原JSP表达式和React状态名（如`原JSP：${order.price} → React：order.state.price`）\n\n### 五、输出要求\n严格输出标准JSON数组，不包含解释性文字\n在没有符合要求的情况下，输出空数组即可，不要给出其他数据。",
+                "fileReferences": [
+                  "file-1758247070585"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\变量接口矩阵表",
+            "outputFileName": "Header.json",
+            "apiEndpoint": "/api/process-file-direct?model=deepseek",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 0
+        },
+        {
+          "id": "step-1758247512816",
+          "name": "函数逻辑提取为接口json",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758247606881",
+                "name": "jsp",
+                "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758247631242",
+                "content": "jsp代码为：{{jsp}}\n\n请分析提供的JSP文件，提取其中所有接口调用逻辑（包括但不限于**表单提交**、JavaScript/AJAX请求、事件触发的接口调用等所有前端发起的接口交互）。每处接口调用的逻辑需转换为一个JSON对象，然后根据规则进行合并，最终输出包含这些JSON对象的数组。\n\n\n### 一、JSON字段提取规则（严格按顺序保留以下字段，字段名与[]中文案完全一致）：\n1. [功能场景]：描述接口调用所属的模块及业务用途（如“用户模块-登录表单提交”“商品模块-分页查询商品列表”）。模块可根据接口路径（如“/api/user/xxx”对应“用户模块”）或页面主要内容推断；业务用途需明确接口在页面中的功能定位。\n2. [调用的接口]：提取JSP中明确的接口路径（如表单的action属性值“/api/user/login”、AJAX的url值“/api/goods/list”）；若路径为相对路径（如“loginAction”），直接保留原始值；无明确路径则填【无】。\n3. [接口调用时机]：描述触发接口调用的事件或时机（如“用户点击登录按钮时”“页面加载完成后自动调用”“表单提交时”）；未明确则填【无】。\n4. [请求的content-type]：根据JSP中接口调用方式：\n   - 一般情况都是固定值：application/json; 特殊场景时请根据react范式和当前的功能逻辑给予合适的值。\n5. [上送参数]：以JSON对象格式描述接口的请求参数，其中key为参数名，value为参数值的获取逻辑（如{\"username\": \"从id为regUsername的输入框中获取value\", \"pageNum\": \"从组件state的pageNum字段获取\"}）。规则：\n   - 若参数值来源于JSP后端变量（如${userId}、<%= pageNum %>），value需描述为“从前端状态/存储中获取（对应原JSP后端变量${xxx}）”（如“从localStorage中获取userId（对应原JSP${userId}）”）。\n   - 无参数则填【无】。\n6. [参数的校验逻辑]：提取JSP中接口调用前的参数校验规则（如“username不能为空”“password长度至少6位”），以数组形式呈现（即使单条规则也需用[]包裹）；若校验逻辑通过外部函数（如validate()）实现，需提取函数内的具体规则；无校验则填【无】。\n7. [接口的调用方式]：提取请求方法（如表单的method属性“POST”、AJAX的type/method“GET”），仅允许值为“POST”“GET”“DELETE”“PUT”；未明确则填【无】。\n8. [请求成功的标志]：描述判断接口调用成功的依据（如“返回的status字段为200”“response中success为true”）；未明确则填【无】。\n9. [成功的处理逻辑]：提取接口调用成功后的操作，需转换为符合React前后端分离的处理方式（避免页面刷新、后端跳转等JSP特有逻辑），以数组形式呈现（即使单条逻辑也需用[]包裹）。示例：\n   - JSP中“window.location.href = '/home'”→ 转换为“通过React Router的navigate跳转至'/home'页面”。\n   - JSP中“document.getElementById('list').innerHTML = res.data”→ 转换为“更新组件state的list字段（用于渲染列表）”。\n   - 未明确则填【无】。\n10. [接口返回数据赋给的变量]：提取前端存储接口返回数据的变量名（如JavaScript中“const userInfo = response.data”的“userInfo”、React组件中“setGoodsList(res.data)”的“goodsList”），和JSP中的变量名保持一致；未明确存储变量则填【无】。\n11. [请求失败的处理逻辑]：提取接口调用失败（如返回错误状态码、业务错误）后的操作，需符合React处理方式，优先使用接口返回的msg信息（如“显示接口返回的res.msg提示（通过UI组件展示）”），若JSP中为固定中文提示则转换为“显示‘xxx’提示（通过UI组件展示）”，以数组形式呈现；未明确则填【无】。\n12. [接口调用异常的处理]：提取网络异常、超时等情况的处理逻辑，需符合React处理方式（如“显示‘网络错误，请重试’提示（通过UI组件展示）”），以数组形式呈现；未明确则填【无】。\n\n\n### 二、提取范围说明（** 必须包含所有接口调用类型 **）：\n1.** 强制提取所有接口调用类型 **，包括但不限于：\n   -** 表单提交 **：所有通过`<form>`标签发起的请求（传统表单提交、表单结合AJAX提交）。\n   -** JavaScript/AJAX请求 **：所有通过脚本发起的请求（XMLHttpRequest、jQuery.ajax、fetch等）。\n   -** 事件触发的接口调用 **：通过点击、输入、加载等事件（onclick、onload、onsubmit）触发的请求。\n   -** 隐性接口调用 **：动态创建的script标签（JSONP请求）、iframe的src指向接口、链接标签的href触发的请求等。\n2.** 不得遗漏任何接口调用 **：即使JSP中同时存在多种接口类型（如表单+AJAX），也必须全部提取。\n3.** 忽略无关内容 **：纯后端逻辑（如JSP中`<% ... %>`内嵌的Java代码、后端转发/重定向）、注释中的接口调用（HTML注释<!-- -->、JS注释//或/* */）无需提取。\n4.** 接口的独立/合并原则 **：若两个接口名称或调用路径不一样（如登录和注册），视为两个独立项；若为同一接口的调用（如分页查询不同页码或根据不同条件进行数据搜索）那么合并为一项。\n5. ** 规则冲突的解决 **：当规则冲突时，请思考这个功能逻辑在前后端分离的react项目中怎么实现是合适的，按照适合react范式的原则进行处理。\n\n\n### 三、示例输入与输出：\n#### 示例输入（JSP片段）：\n<!-- 传统表单提交 -->\n<form id=\"registerForm\" action=\"/api/user/register\" method=\"POST\" onsubmit=\"return validateRegister()\">\n  <input type=\"text\" name=\"username\" id=\"regUsername\" />\n  <input type=\"password\" name=\"pwd\" id=\"regPwd\" />\n  <button type=\"submit\">注册</button>\n</form>\n\n<!-- AJAX提交（含后端变量） -->\n<script>\n  // 注册表单校验\n  function validateRegister() {\n    const username = document.getElementById(\"regUsername\").value;\n    if (!username) {\n      alert(\"用户名不能为空\");\n      return false;\n    }\n    return true;\n  }\n\n  // 登录请求（含后端变量）\n  function login() {\n    const user = document.getElementById(\"loginUser\").value;\n    $.post(\"/api/user/login\", { \n      user: user, \n      userId: ${currentUserId}  // JSP后端变量\n    }, function(res) {\n      if (res.success) {\n        location.href = \"/home\"; // JSP页面跳转\n      } else {\n        alert(res.msg);\n      }\n    }).fail(function() {\n      alert(\"网络错误，请重试\");\n    });\n  }\n</script>\n\n#### 示例输出（JSON数组）：\n[\n  {\n    \"功能场景\": \"用户模块-用户注册表单提交\",\n    \"调用的接口\": \"/api/user/register\",\n    \"接口调用时机\": \"用户点击注册按钮触发表单提交时\",\n    \"请求的content-type\": \"application/x-www-form-urlencoded\",\n    \"上送参数\": {\n      \"username\": \"从id为regUsername的输入框中获取value\",\n      \"pwd\": \"从id为regPwd的输入框中获取value\"\n    },\n    \"参数的校验逻辑\": [\"username不能为空\"],\n    \"接口的调用方式\": \"POST\",\n    \"请求成功的标志\": \"无\",\n    \"成功的处理逻辑\": [\"无\"],\n    \"接口返回数据赋给的变量\": \"无\",\n    \"请求失败的处理逻辑\": [\"无\"],\n    \"接口调用异常的处理\": [\"无\"]\n  },\n  {\n    \"功能场景\": \"用户模块-用户登录AJAX请求\",\n    \"调用的接口\": \"/api/user/login\",\n    \"接口调用时机\": \"用户点击登录按钮时（通过onclick事件触发login函数）\",\n    \"请求的content-type\": \"application/json\",\n    \"上送参数\": {\n      \"user\": \"从id为loginUser的输入框中获取value\",\n      \"userId\": \"从localStorage中获取userId（对应原JSP${currentUserId}）\"\n    },\n    \"参数的校验逻辑\": [\"无\"],\n    \"接口的调用方式\": \"POST\",\n    \"请求成功的标志\": \"返回的res.success为true\",\n    \"成功的处理逻辑\": [\"通过React Router的navigate跳转至'/home'页面\"],\n    \"接口返回数据赋给的变量\": \"无\",\n    \"请求失败的处理逻辑\": [\"显示接口返回的res.msg提示（通过UI组件展示）\"],\n    \"接口调用异常的处理\": [\"显示‘网络错误，请重试’提示（通过UI组件展示）\"]\n  }\n]\n\n\n### 四、输出要求：\n1. 严格遵循字段顺序和名称，确保每个JSON对象的key与“[字段名]”完全一致，不得增删字段。\n2. 所有字段值均为字符串或数组/JSON对象（如“上送参数”为JSON对象，“参数的校验逻辑”为数组）；若JSP中无对应信息，必须填【无】（不含引号）。\n3. 数组类型字段（如“参数的校验逻辑”“成功的处理逻辑”）无论元素数量多少，必须以数组形式呈现（用[]包裹）；“上送参数”为JSON对象（用{}包裹），无参数则填【无】。\n4. 所有处理逻辑（成功/失败/异常）必须符合React前后端分离方式（如用路由跳转替代页面刷新，用状态更新替代DOM操作）。\n5. 输出内容仅为JSON数组，无任何额外文字说明、注释或格式标记。\n6. 在没有符合要求的情况下，输出空数组即可，不要给出其他数据。\n\n请基于以上规则，分析提供的JSP文件并输出对应的JSON数组，确保所有接口调用均被提取。",
+                "fileReferences": [
+                  "file-1758247606881"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\函数接口矩阵表",
+            "outputFileName": "Header.json",
+            "apiEndpoint": "/api/process-file-direct?model=deepseek",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 1
+        },
+        {
+          "id": "step-1758262602360",
+          "name": "合并两个json",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758262624048",
+                "name": "变量",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\变量接口矩阵表\\Header.json"
+              },
+              {
+                "id": "file-1758262647128",
+                "name": "函数",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\函数接口矩阵表\\Header.json"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758262657120",
+                "content": "json1:{{变量}}\njson2:{{函数}}\n将两个json内容合并到一个数组中，生成新的json返回，回答只生成json，不包含其他描述性话语",
+                "fileReferences": [
+                  "file-1758262624048",
+                  "file-1758262647128"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\接口矩阵表",
+            "outputFileName": "Header.json",
+            "apiEndpoint": "/api/process-file-direct?model=qianwen",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 2
+        },
+        {
+          "id": "step-1758266165344",
+          "name": "根据接口json和接口文档筛选适用接口",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758266234991",
+                "name": "接口矩阵表",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\接口矩阵表\\Header.json"
+              },
+              {
+                "id": "file-1758266286833",
+                "name": "接口文档",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\接口文档\\用户管理模块接口.json"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758266303960",
+                "content": "接口矩阵表：{{接口矩阵表}}\n接口文档：{{接口文档}}\n\n根据接口矩阵表json中的功能描述，从接口文档json中选取合适的接口，重新建立接口矩阵表返回",
+                "fileReferences": [
+                  "file-1758266234991",
+                  "file-1758266286833"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\接口矩阵表",
+            "outputFileName": "Header.json",
+            "apiEndpoint": "/api/process-file-direct?model=qianwen",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 3
+        },
+        {
+          "id": "step-1758267003678",
+          "name": "根据接口矩阵表修改tsx",
+          "description": "",
+          "type": "file_process",
+          "config": {
+            "fileInputs": [
+              {
+                "id": "file-1758267164054",
+                "name": "接口矩阵表",
+                "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\接口矩阵表\\Header.json"
+              },
+              {
+                "id": "file-1758267250883",
+                "name": "tsx",
+                "path": "E:\\work\\aise\\uob-switch\\clr-react-app-ts\\src\\pages\\Header.tsx"
+              }
+            ],
+            "promptInputs": [
+              {
+                "id": "prompt-1758267233573",
+                "content": "接口矩阵表：{{接口矩阵表}}\ntsx代码：{{tsx}}\n\n请基于提供的JSON和源TSX文件，将源TSX补充为完整的React组件（仅关注并完善接口调用相关逻辑）：\n\n转换规则（严格限制优化范围，禁止冗余代码）：\n1. **仅关注接口调用相关逻辑**：\n   - 只处理与接口调用直接相关的代码（包括接口函数定义、参数传递、请求/响应处理、成功/失败/异常逻辑）。\n   - 不做任何额外优化：禁止修改原TSX的组件结构、样式逻辑、非接口相关的渲染逻辑（如条件渲染的判断条件、DOM结构布局）。\n   - 不新增无关功能：如原TSX无加载动画，即使接口调用需要，也不额外添加（仅使用原TSX已有的状态或组件）。\n\n2. **接口实现规范**：\n   - 为每个接口创建/完善独立函数（优先复用TSX中已有函数，避免重复定义），使用Axios调用，严格遵循JSON中的请求方式、content-type。\n   - 入参处理：根据JSON的\"上送参数\"配置传递参数（如从props、state、路由参数中获取，对应步骤1/2的参数来源描述）。\n   - 调用时机：按JSON的\"接口调用时机\"实现（如组件挂载时调用的接口放在useEffect(() => {}, [])中；点击触发的接口绑定到onClick事件）。\n   - 对于[请求的content-type]，所有的接口调用都严格使用：application/json，不关心json中提供的值。\n   - 对于[接口的调用方式]，所有的调用都严格使用：post，不关心json中提供的值 \n   - code === 200，为接口请求成功的标志。\n  - 接口调用路径：在每个接口调用路径前增加 /api，得到 /api/xxxx 的接口\n\n3. **冗余代码清理**：\n   - 若原TSX已有接口调用逻辑（如旧的fetch请求、不完整的Axios调用），需替换为基于JSON的完整逻辑，并删除原冗余代码（如过时的参数处理、重复的错误提示）。\n   - 确保接口函数体内只包含必要逻辑（请求发送、响应处理、状态更新），删除注释掉的代码、调试用的console.log（除非原TSX保留了必要的日志）。\n\n4. **响应处理规则**：\n   - 成功逻辑：按JSON的\"成功的处理逻辑\"实现（如setState更新状态、路由跳转），使用原TSX已有的状态变量和工具函数（如原TSX有customNavigate函数，则优先使用而非新增useNavigate）。\n   - 失败/异常：按JSON描述处理，无描述则使用原TSX已有的错误提示方式（如原TSX用message.error则统一沿用，不改为alert）。\n\n5. **TypeScript类型补充**：\n   - 仅为接口请求/响应数据补充必要的TypeScript接口（如interface UserResponse { code: number; data: User }），不修改原TSX已有的类型定义。\n\n6. 如果JSON为空，就不需要添加新的接口调用。\n\n\n输出要求：\n1. 输出完整TSX代码（包含原TSX的所有内容+新增/修改的接口逻辑），不要遗漏任何代码 且 确保无语法错误。\n2. 接口调用相关代码需清晰、无冗余（无重复定义、无废弃逻辑），与原TSX的非接口逻辑兼容。\n3. 不包含任何解释文字，仅输出最终TSX代码。\n\n额外场景约束：\n- 所有接口调用必须对应用户交互事件（如点击按钮、表单提交、输入变化），需绑定到对应的事件处理函数（如onClick、onSubmit）。\n- “上送参数”的来源需区分类型处理：\n  - 动态参数：与用户操作相关的参数（如从输入框的value、下拉框的selectedValue、组件state的临时变量中获取），需确保参数与事件源正确关联。\n  - 固定值参数：无需用户输入的常量参数（如业务类型type=\"1\"、默认页码pageNum=1），直接按JSON描述的固定值传递，无需绑定用户操作。\n- 接口返回数据赋给的变量时，优先复用已定义的state、工具函数（如路由跳转函数、错误提示组件），避免重复定义。需确保state定义完整（若原TSX无对应state，需补充定义）\n- 如果有代码改动，那么严格控制在接口调用相关逻辑范围内修改，超出范围的代码逻辑禁止修改；修改代码后必须重新系统分析代码逻辑，保证逻辑正确和语法正确。",
+                "fileReferences": [
+                  "file-1758267164054",
+                  "file-1758267250883"
+                ]
+              }
+            ],
+            "outputFolder": "E:\\work\\aise\\uob-switch\\clr-react-app-ts\\src\\pages",
+            "outputFileName": "Header.tsx",
+            "apiEndpoint": "/api/process-file-direct?model=deepseek",
+            "customSettings": {}
+          },
+          "dependencies": [],
+          "status": "pending",
+          "order": 4
+        }
+      ],
+      "createdAt": "2025-09-19T01:44:59.733Z",
+      "updatedAt": "2025-09-19T07:46:29.487Z"
+    }
+  ],
+  "workflowOrder": [
+    "workflow-1758093490939",
+    "workflow-1758188177814",
+    "workflow-1758246299733"
+  ],
+  "lastUpdated": "2025-09-19T07:46:29.490Z",
+  "version": "1.0.0",
+  "currentWorkflow": {
+    "id": "workflow-1758246299733",
+    "name": "接口调用",
+    "description": "",
+    "steps": [
+      {
+        "id": "step-1758246301997",
+        "name": "java变量提取为接口json",
+        "description": "",
+        "type": "file_process",
+        "config": {
+          "fileInputs": [
+            {
+              "id": "file-1758247070585",
+              "name": "jsp",
+              "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+            }
+          ],
+          "promptInputs": [
+            {
+              "id": "prompt-1758247076735",
+              "content": "jsp代码为：{{jsp}}\n\n请分析 JSP 代码，仅关注并提取 JSP 中在页面渲染时从后端直接嵌入的动态变量（如通过 EL 表达式 ${...}、JSP 脚本片段 <%= ... %> 等在页面首次加载 / 渲染时直接嵌入的变量，不包含页面交互过程中通过 AJAX 异步请求获取的变量！），忽略纯静态 HTML、CSS、JavaScript 逻辑（尤其是 AJAX 请求相关代码）及 JSP 控制流标签（如 <s:iterator>、<s:if> 本身的语法结构）。需将这些嵌入变量中需要通过接口获取的业务数据，转换为符合 React 前后端分离架构的接口调用 JSON 描述，严格遵循以下规则:\n\n### 一、核心任务\n仅处理页面渲染时通过EL表达式(${...})或JSP脚本(<%= ... %>)嵌入的后端业务数据变量，排除静态资源/会话数据/请求参数等前端自治数据。\n\n### 二、JSON格式要求\n1. 必须使用以下固定中文key：\n[\"功能场景\",\"调用的接口\",\"接口调用时机\",\"请求的content-type\",\"上送参数\",\"参数的校验逻辑\",\"接口的调用方式\",\"请求成功的标志\",\"成功的处理逻辑\",\"接口返回数据赋给的变量\",\"请求失败的处理逻辑\",\"接口调用异常的处理\",\"备注\"]\n\n### 三、变量识别与合并规则\n1. **判断是否需要接口调用**：\n   - **必须提取**：\n     - 业务实体属性：`${product.price}`（不包括会话中获取的或该场景在前后端分离的react项目中不适合用接口获取的情况）\n     - 动态数据集合：`${orderList}`, `${reportData}`\n     - 单独规则：只要是通过`request.getAttribute()`获取的数据都进行提取\n   - **绝对排除**：\n     - 用户信息：例如`${user.age}，这种信息会在登录时获取并存储在前端，其他组件从状态管理中获取\n     - 资源路径：CSS/JS/图片路径（如`${styleSheet}`, `${logoPath}`）\n     - UI配置：主题名称/布局参数（如`${themeName}`）\n     - 会话数据：`${session.userId}`, `${token}`\n     - 请求参数：`${param.pageNo}`, `${query.sort}`\n     - 框架对象：`${pageContext}`, `${request.contextPath}`\n     - 计算值/常量：`${total}`, `${\"固定文本\"}`, `${100}`\n     - 未渲染变量：脚本中计算但未输出的变量 \n - **仅在以上的规则发生冲突时使用这个规则**：分析jsp的逻辑场景 和 应用于前后端分离模式的react项目的范式，然后进行判断\n\n2. **合并规则**：\n   - 显式父对象：`${a.prop1}`和`${a.prop2}`→合并为对象\"a\"\n   - 隐性关联：`${userName}`和`${userRole}`→合并为对象\"user\"\n   - 独立实体：`${product.name}`与`${order.amount}`→分属不同接口\n\n### 四、字段填写规范（React范式）\n- \"功能场景\"：描述组件业务用途（如\"订单组件-渲染订单基础信息\"）\n- \"调用的接口\"：\"待补充（需匹配接口文档）\"\n- \"接口调用时机\"：\n  - 组件挂载：`useEffect(() => {}, [])`\n  - 参数变化：`useEffect(() => {}, [param])`\n  - 未明确则填\"无\"\n- \"上送参数\"：JSON格式（如`{\"orderId\":\"从URL参数useParams()获取\"}`）\n- \"参数的校验逻辑\"：数组格式（如`[\"orderId必须为数字\"]`）\n- \"接口的调用方式\"：业务数据获取默认\"GET\"\n- \"请求成功的标志\"：`response.code === 200`\n- \"成功的处理逻辑\"：数组格式（如`[\"setOrder(response.data)更新状态\"]`）\n- \"接口返回数据赋给的变量\"：React状态变量名（如\"order\"）和JSP中的变量名保持一致\n- \"请求失败/异常处理\"：数组格式的错误处理\n- \"备注\"：必须包含原JSP表达式和React状态名（如`原JSP：${order.price} → React：order.state.price`）\n\n### 五、输出要求\n严格输出标准JSON数组，不包含解释性文字\n在没有符合要求的情况下，输出空数组即可，不要给出其他数据。",
+              "fileReferences": [
+                "file-1758247070585"
+              ]
+            }
+          ],
+          "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\变量接口矩阵表",
+          "outputFileName": "Header.json",
+          "apiEndpoint": "/api/process-file-direct?model=deepseek",
+          "customSettings": {}
+        },
+        "dependencies": [],
+        "status": "pending",
+        "order": 0
+      },
+      {
+        "id": "step-1758247512816",
+        "name": "函数逻辑提取为接口json",
+        "description": "",
+        "type": "file_process",
+        "config": {
+          "fileInputs": [
+            {
+              "id": "file-1758247606881",
+              "name": "jsp",
+              "path": "E:\\work\\aise\\uob-switch\\clr-sg\\plce-sg-web\\src\\main\\webapp\\header.jsp"
+            }
+          ],
+          "promptInputs": [
+            {
+              "id": "prompt-1758247631242",
+              "content": "jsp代码为：{{jsp}}\n\n请分析提供的JSP文件，提取其中所有接口调用逻辑（包括但不限于**表单提交**、JavaScript/AJAX请求、事件触发的接口调用等所有前端发起的接口交互）。每处接口调用的逻辑需转换为一个JSON对象，然后根据规则进行合并，最终输出包含这些JSON对象的数组。\n\n\n### 一、JSON字段提取规则（严格按顺序保留以下字段，字段名与[]中文案完全一致）：\n1. [功能场景]：描述接口调用所属的模块及业务用途（如“用户模块-登录表单提交”“商品模块-分页查询商品列表”）。模块可根据接口路径（如“/api/user/xxx”对应“用户模块”）或页面主要内容推断；业务用途需明确接口在页面中的功能定位。\n2. [调用的接口]：提取JSP中明确的接口路径（如表单的action属性值“/api/user/login”、AJAX的url值“/api/goods/list”）；若路径为相对路径（如“loginAction”），直接保留原始值；无明确路径则填【无】。\n3. [接口调用时机]：描述触发接口调用的事件或时机（如“用户点击登录按钮时”“页面加载完成后自动调用”“表单提交时”）；未明确则填【无】。\n4. [请求的content-type]：根据JSP中接口调用方式：\n   - 一般情况都是固定值：application/json; 特殊场景时请根据react范式和当前的功能逻辑给予合适的值。\n5. [上送参数]：以JSON对象格式描述接口的请求参数，其中key为参数名，value为参数值的获取逻辑（如{\"username\": \"从id为regUsername的输入框中获取value\", \"pageNum\": \"从组件state的pageNum字段获取\"}）。规则：\n   - 若参数值来源于JSP后端变量（如${userId}、<%= pageNum %>），value需描述为“从前端状态/存储中获取（对应原JSP后端变量${xxx}）”（如“从localStorage中获取userId（对应原JSP${userId}）”）。\n   - 无参数则填【无】。\n6. [参数的校验逻辑]：提取JSP中接口调用前的参数校验规则（如“username不能为空”“password长度至少6位”），以数组形式呈现（即使单条规则也需用[]包裹）；若校验逻辑通过外部函数（如validate()）实现，需提取函数内的具体规则；无校验则填【无】。\n7. [接口的调用方式]：提取请求方法（如表单的method属性“POST”、AJAX的type/method“GET”），仅允许值为“POST”“GET”“DELETE”“PUT”；未明确则填【无】。\n8. [请求成功的标志]：描述判断接口调用成功的依据（如“返回的status字段为200”“response中success为true”）；未明确则填【无】。\n9. [成功的处理逻辑]：提取接口调用成功后的操作，需转换为符合React前后端分离的处理方式（避免页面刷新、后端跳转等JSP特有逻辑），以数组形式呈现（即使单条逻辑也需用[]包裹）。示例：\n   - JSP中“window.location.href = '/home'”→ 转换为“通过React Router的navigate跳转至'/home'页面”。\n   - JSP中“document.getElementById('list').innerHTML = res.data”→ 转换为“更新组件state的list字段（用于渲染列表）”。\n   - 未明确则填【无】。\n10. [接口返回数据赋给的变量]：提取前端存储接口返回数据的变量名（如JavaScript中“const userInfo = response.data”的“userInfo”、React组件中“setGoodsList(res.data)”的“goodsList”），和JSP中的变量名保持一致；未明确存储变量则填【无】。\n11. [请求失败的处理逻辑]：提取接口调用失败（如返回错误状态码、业务错误）后的操作，需符合React处理方式，优先使用接口返回的msg信息（如“显示接口返回的res.msg提示（通过UI组件展示）”），若JSP中为固定中文提示则转换为“显示‘xxx’提示（通过UI组件展示）”，以数组形式呈现；未明确则填【无】。\n12. [接口调用异常的处理]：提取网络异常、超时等情况的处理逻辑，需符合React处理方式（如“显示‘网络错误，请重试’提示（通过UI组件展示）”），以数组形式呈现；未明确则填【无】。\n\n\n### 二、提取范围说明（** 必须包含所有接口调用类型 **）：\n1.** 强制提取所有接口调用类型 **，包括但不限于：\n   -** 表单提交 **：所有通过`<form>`标签发起的请求（传统表单提交、表单结合AJAX提交）。\n   -** JavaScript/AJAX请求 **：所有通过脚本发起的请求（XMLHttpRequest、jQuery.ajax、fetch等）。\n   -** 事件触发的接口调用 **：通过点击、输入、加载等事件（onclick、onload、onsubmit）触发的请求。\n   -** 隐性接口调用 **：动态创建的script标签（JSONP请求）、iframe的src指向接口、链接标签的href触发的请求等。\n2.** 不得遗漏任何接口调用 **：即使JSP中同时存在多种接口类型（如表单+AJAX），也必须全部提取。\n3.** 忽略无关内容 **：纯后端逻辑（如JSP中`<% ... %>`内嵌的Java代码、后端转发/重定向）、注释中的接口调用（HTML注释<!-- -->、JS注释//或/* */）无需提取。\n4.** 接口的独立/合并原则 **：若两个接口名称或调用路径不一样（如登录和注册），视为两个独立项；若为同一接口的调用（如分页查询不同页码或根据不同条件进行数据搜索）那么合并为一项。\n5. ** 规则冲突的解决 **：当规则冲突时，请思考这个功能逻辑在前后端分离的react项目中怎么实现是合适的，按照适合react范式的原则进行处理。\n\n\n### 三、示例输入与输出：\n#### 示例输入（JSP片段）：\n<!-- 传统表单提交 -->\n<form id=\"registerForm\" action=\"/api/user/register\" method=\"POST\" onsubmit=\"return validateRegister()\">\n  <input type=\"text\" name=\"username\" id=\"regUsername\" />\n  <input type=\"password\" name=\"pwd\" id=\"regPwd\" />\n  <button type=\"submit\">注册</button>\n</form>\n\n<!-- AJAX提交（含后端变量） -->\n<script>\n  // 注册表单校验\n  function validateRegister() {\n    const username = document.getElementById(\"regUsername\").value;\n    if (!username) {\n      alert(\"用户名不能为空\");\n      return false;\n    }\n    return true;\n  }\n\n  // 登录请求（含后端变量）\n  function login() {\n    const user = document.getElementById(\"loginUser\").value;\n    $.post(\"/api/user/login\", { \n      user: user, \n      userId: ${currentUserId}  // JSP后端变量\n    }, function(res) {\n      if (res.success) {\n        location.href = \"/home\"; // JSP页面跳转\n      } else {\n        alert(res.msg);\n      }\n    }).fail(function() {\n      alert(\"网络错误，请重试\");\n    });\n  }\n</script>\n\n#### 示例输出（JSON数组）：\n[\n  {\n    \"功能场景\": \"用户模块-用户注册表单提交\",\n    \"调用的接口\": \"/api/user/register\",\n    \"接口调用时机\": \"用户点击注册按钮触发表单提交时\",\n    \"请求的content-type\": \"application/x-www-form-urlencoded\",\n    \"上送参数\": {\n      \"username\": \"从id为regUsername的输入框中获取value\",\n      \"pwd\": \"从id为regPwd的输入框中获取value\"\n    },\n    \"参数的校验逻辑\": [\"username不能为空\"],\n    \"接口的调用方式\": \"POST\",\n    \"请求成功的标志\": \"无\",\n    \"成功的处理逻辑\": [\"无\"],\n    \"接口返回数据赋给的变量\": \"无\",\n    \"请求失败的处理逻辑\": [\"无\"],\n    \"接口调用异常的处理\": [\"无\"]\n  },\n  {\n    \"功能场景\": \"用户模块-用户登录AJAX请求\",\n    \"调用的接口\": \"/api/user/login\",\n    \"接口调用时机\": \"用户点击登录按钮时（通过onclick事件触发login函数）\",\n    \"请求的content-type\": \"application/json\",\n    \"上送参数\": {\n      \"user\": \"从id为loginUser的输入框中获取value\",\n      \"userId\": \"从localStorage中获取userId（对应原JSP${currentUserId}）\"\n    },\n    \"参数的校验逻辑\": [\"无\"],\n    \"接口的调用方式\": \"POST\",\n    \"请求成功的标志\": \"返回的res.success为true\",\n    \"成功的处理逻辑\": [\"通过React Router的navigate跳转至'/home'页面\"],\n    \"接口返回数据赋给的变量\": \"无\",\n    \"请求失败的处理逻辑\": [\"显示接口返回的res.msg提示（通过UI组件展示）\"],\n    \"接口调用异常的处理\": [\"显示‘网络错误，请重试’提示（通过UI组件展示）\"]\n  }\n]\n\n\n### 四、输出要求：\n1. 严格遵循字段顺序和名称，确保每个JSON对象的key与“[字段名]”完全一致，不得增删字段。\n2. 所有字段值均为字符串或数组/JSON对象（如“上送参数”为JSON对象，“参数的校验逻辑”为数组）；若JSP中无对应信息，必须填【无】（不含引号）。\n3. 数组类型字段（如“参数的校验逻辑”“成功的处理逻辑”）无论元素数量多少，必须以数组形式呈现（用[]包裹）；“上送参数”为JSON对象（用{}包裹），无参数则填【无】。\n4. 所有处理逻辑（成功/失败/异常）必须符合React前后端分离方式（如用路由跳转替代页面刷新，用状态更新替代DOM操作）。\n5. 输出内容仅为JSON数组，无任何额外文字说明、注释或格式标记。\n6. 在没有符合要求的情况下，输出空数组即可，不要给出其他数据。\n\n请基于以上规则，分析提供的JSP文件并输出对应的JSON数组，确保所有接口调用均被提取。",
+              "fileReferences": [
+                "file-1758247606881"
+              ]
+            }
+          ],
+          "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\函数接口矩阵表",
+          "outputFileName": "Header.json",
+          "apiEndpoint": "/api/process-file-direct?model=deepseek",
+          "customSettings": {}
+        },
+        "dependencies": [],
+        "status": "pending",
+        "order": 1
+      },
+      {
+        "id": "step-1758262602360",
+        "name": "合并两个json",
+        "description": "",
+        "type": "file_process",
+        "config": {
+          "fileInputs": [
+            {
+              "id": "file-1758262624048",
+              "name": "变量",
+              "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\变量接口矩阵表\\Header.json"
+            },
+            {
+              "id": "file-1758262647128",
+              "name": "函数",
+              "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\函数接口矩阵表\\Header.json"
+            }
+          ],
+          "promptInputs": [
+            {
+              "id": "prompt-1758262657120",
+              "content": "json1:{{变量}}\njson2:{{函数}}\n将两个json内容合并到一个数组中，生成新的json返回，回答只生成json，不包含其他描述性话语",
+              "fileReferences": [
+                "file-1758262624048",
+                "file-1758262647128"
+              ]
+            }
+          ],
+          "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\接口矩阵表",
+          "outputFileName": "Header.json",
+          "apiEndpoint": "/api/process-file-direct?model=qianwen",
+          "customSettings": {}
+        },
+        "dependencies": [],
+        "status": "pending",
+        "order": 2
+      },
+      {
+        "id": "step-1758266165344",
+        "name": "根据接口json和接口文档筛选适用接口",
+        "description": "",
+        "type": "file_process",
+        "config": {
+          "fileInputs": [
+            {
+              "id": "file-1758266234991",
+              "name": "接口矩阵表",
+              "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\接口矩阵表\\Header.json"
+            },
+            {
+              "id": "file-1758266286833",
+              "name": "接口文档",
+              "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\接口文档\\用户管理模块接口.json"
+            }
+          ],
+          "promptInputs": [
+            {
+              "id": "prompt-1758266303960",
+              "content": "接口矩阵表：{{接口矩阵表}}\n接口文档：{{接口文档}}\n\n根据接口矩阵表json中的功能描述，从接口文档json中选取合适的接口，重新建立接口矩阵表返回",
+              "fileReferences": [
+                "file-1758266234991",
+                "file-1758266286833"
+              ]
+            }
+          ],
+          "outputFolder": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\接口矩阵表",
+          "outputFileName": "Header.json",
+          "apiEndpoint": "/api/process-file-direct?model=qianwen",
+          "customSettings": {}
+        },
+        "dependencies": [],
+        "status": "pending",
+        "order": 3
+      },
+      {
+        "id": "step-1758267003678",
+        "name": "根据接口矩阵表修改tsx",
+        "description": "",
+        "type": "file_process",
+        "config": {
+          "fileInputs": [
+            {
+              "id": "file-1758267164054",
+              "name": "接口矩阵表",
+              "path": "E:\\work\\aise\\uob-switch\\react-temp\\interface\\json-new\\接口矩阵表\\Header.json"
+            },
+            {
+              "id": "file-1758267250883",
+              "name": "tsx",
+              "path": "E:\\work\\aise\\uob-switch\\clr-react-app-ts\\src\\pages\\Header.tsx"
+            }
+          ],
+          "promptInputs": [
+            {
+              "id": "prompt-1758267233573",
+              "content": "接口矩阵表：{{接口矩阵表}}\ntsx代码：{{tsx}}\n\n请基于提供的JSON和源TSX文件，将源TSX补充为完整的React组件（仅关注并完善接口调用相关逻辑）：\n\n转换规则（严格限制优化范围，禁止冗余代码）：\n1. **仅关注接口调用相关逻辑**：\n   - 只处理与接口调用直接相关的代码（包括接口函数定义、参数传递、请求/响应处理、成功/失败/异常逻辑）。\n   - 不做任何额外优化：禁止修改原TSX的组件结构、样式逻辑、非接口相关的渲染逻辑（如条件渲染的判断条件、DOM结构布局）。\n   - 不新增无关功能：如原TSX无加载动画，即使接口调用需要，也不额外添加（仅使用原TSX已有的状态或组件）。\n\n2. **接口实现规范**：\n   - 为每个接口创建/完善独立函数（优先复用TSX中已有函数，避免重复定义），使用Axios调用，严格遵循JSON中的请求方式、content-type。\n   - 入参处理：根据JSON的\"上送参数\"配置传递参数（如从props、state、路由参数中获取，对应步骤1/2的参数来源描述）。\n   - 调用时机：按JSON的\"接口调用时机\"实现（如组件挂载时调用的接口放在useEffect(() => {}, [])中；点击触发的接口绑定到onClick事件）。\n   - 对于[请求的content-type]，所有的接口调用都严格使用：application/json，不关心json中提供的值。\n   - 对于[接口的调用方式]，所有的调用都严格使用：post，不关心json中提供的值 \n   - code === 200，为接口请求成功的标志。\n  - 接口调用路径：在每个接口调用路径前增加 /api，得到 /api/xxxx 的接口\n\n3. **冗余代码清理**：\n   - 若原TSX已有接口调用逻辑（如旧的fetch请求、不完整的Axios调用），需替换为基于JSON的完整逻辑，并删除原冗余代码（如过时的参数处理、重复的错误提示）。\n   - 确保接口函数体内只包含必要逻辑（请求发送、响应处理、状态更新），删除注释掉的代码、调试用的console.log（除非原TSX保留了必要的日志）。\n\n4. **响应处理规则**：\n   - 成功逻辑：按JSON的\"成功的处理逻辑\"实现（如setState更新状态、路由跳转），使用原TSX已有的状态变量和工具函数（如原TSX有customNavigate函数，则优先使用而非新增useNavigate）。\n   - 失败/异常：按JSON描述处理，无描述则使用原TSX已有的错误提示方式（如原TSX用message.error则统一沿用，不改为alert）。\n\n5. **TypeScript类型补充**：\n   - 仅为接口请求/响应数据补充必要的TypeScript接口（如interface UserResponse { code: number; data: User }），不修改原TSX已有的类型定义。\n\n6. 如果JSON为空，就不需要添加新的接口调用。\n\n\n输出要求：\n1. 输出完整TSX代码（包含原TSX的所有内容+新增/修改的接口逻辑），不要遗漏任何代码 且 确保无语法错误。\n2. 接口调用相关代码需清晰、无冗余（无重复定义、无废弃逻辑），与原TSX的非接口逻辑兼容。\n3. 不包含任何解释文字，仅输出最终TSX代码。\n\n额外场景约束：\n- 所有接口调用必须对应用户交互事件（如点击按钮、表单提交、输入变化），需绑定到对应的事件处理函数（如onClick、onSubmit）。\n- “上送参数”的来源需区分类型处理：\n  - 动态参数：与用户操作相关的参数（如从输入框的value、下拉框的selectedValue、组件state的临时变量中获取），需确保参数与事件源正确关联。\n  - 固定值参数：无需用户输入的常量参数（如业务类型type=\"1\"、默认页码pageNum=1），直接按JSON描述的固定值传递，无需绑定用户操作。\n- 接口返回数据赋给的变量时，优先复用已定义的state、工具函数（如路由跳转函数、错误提示组件），避免重复定义。需确保state定义完整（若原TSX无对应state，需补充定义）\n- 如果有代码改动，那么严格控制在接口调用相关逻辑范围内修改，超出范围的代码逻辑禁止修改；修改代码后必须重新系统分析代码逻辑，保证逻辑正确和语法正确。",
+              "fileReferences": [
+                "file-1758267164054",
+                "file-1758267250883"
+              ]
+            }
+          ],
+          "outputFolder": "E:\\work\\aise\\uob-switch\\clr-react-app-ts\\src\\pages",
+          "outputFileName": "Header.tsx",
+          "apiEndpoint": "/api/process-file-direct?model=deepseek",
+          "customSettings": {}
+        },
+        "dependencies": [],
+        "status": "pending",
+        "order": 4
+      }
+    ],
+    "createdAt": "2025-09-19T01:44:59.733Z",
+    "updatedAt": "2025-09-19T07:46:29.487Z"
+  }
+}

@@ -1,0 +1,191 @@
+/* 工作流设计器样式 */
+.selected-step-card {
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+.selected-step-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(24, 144, 255, 0.25);
+}
+
+/* 步骤卡片动画 */
+.step-card {
+  transition: all 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 依赖关系图样式 */
+.dependency-graph-container {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.dependency-graph-canvas {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 步骤状态指示器 */
+.step-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.step-status-pending {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.step-status-running {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+.step-status-success {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.step-status-error {
+  background: #fff2f0;
+  color: #ff4d4f;
+}
+
+/* 工作流执行进度 */
+.workflow-progress {
+  margin: 16px 0;
+}
+
+.workflow-progress .ant-progress-text {
+  font-weight: 500;
+}
+
+/* 步骤表单样式 */
+.step-form-container {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.step-form-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.step-form-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.step-form-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.step-form-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 输入配置卡片 */
+.input-config-card {
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.input-config-card:hover {
+  border-color: #1890ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
+}
+
+/* 依赖关系连线动画 */
+@keyframes dependency-flow {
+  0% {
+    stroke-dashoffset: 20;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.dependency-line {
+  stroke-dasharray: 5, 5;
+  animation: dependency-flow 1s linear infinite;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .workflow-designer-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .workflow-designer-header .ant-space {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .step-card-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* 工作流名称编辑 */
+.workflow-name-input {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 0;
+}
+
+.workflow-name-input:focus {
+  border: 1px solid #1890ff;
+  background: white;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+/* 步骤类型图标 */
+.step-type-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+}
+
+.step-type-icon.file-process {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+.step-type-icon.data-transform {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.step-type-icon.api-call {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.step-type-icon.condition {
+  background: #f9f0ff;
+  color: #722ed1;
+}
